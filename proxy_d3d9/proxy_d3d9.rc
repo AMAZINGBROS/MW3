@@ -1,0 +1,85 @@
+#include "resource.h"
+
+// Embedded as raw RCDATA (not a Windows FONT resource, which triggers a system-wide
+// AddFontResource-style install) -- loaded at runtime via AddFontMemResourceEx
+// (overlay_hud.cpp) as a private, in-process-only font, never touching the user's
+// system font list. Files are the actual, unmodified Google Fonts static instances;
+// see resource.h for the licensing note and README.md for attribution.
+IDR_FONT_BARLOWCONDENSED_SEMIBOLD        RCDATA "..\\assets\\fonts\\BarlowCondensed-SemiBold.ttf"
+IDR_FONT_BARLOWCONDENSED_SEMIBOLD_ITALIC RCDATA "..\\assets\\fonts\\BarlowCondensed-SemiBoldItalic.ttf"
+
+// Controller-glyph icons (issue #48, 2026-07-31) -- the real, already-extracted PNGs
+// from assets/button_glyphs/, embedded directly rather than loaded from loose files
+// on disk, same reasoning as the fonts above: no separate deployment step, no
+// silently-missing-file failure mode. Named as BAREWORD string resource names (NOT
+// quoted string literals -- rc.exe accepts quoted names but FindResourceA then can't
+// look them up by the same plain ANSI string, confirmed live 2026-07-31: every lookup
+// returned a null handle until the quotes were removed) so overlay_hud.cpp's icon
+// loader can look one up directly by the same asset-name string
+// analog_input_hooks.cpp's existing GlyphAssetName() table already returns, with no
+// ID-mapping table to keep in sync on either side.
+dpad_down RCDATA "..\\assets\\button_glyphs\\dpad_down.png"
+dpad_left RCDATA "..\\assets\\button_glyphs\\dpad_left.png"
+dpad_right RCDATA "..\\assets\\button_glyphs\\dpad_right.png"
+dpad_up RCDATA "..\\assets\\button_glyphs\\dpad_up.png"
+ps_circle RCDATA "..\\assets\\button_glyphs\\ps_circle.png"
+ps_create RCDATA "..\\assets\\button_glyphs\\ps_create.png"
+ps_cross RCDATA "..\\assets\\button_glyphs\\ps_cross.png"
+ps_l1 RCDATA "..\\assets\\button_glyphs\\ps_l1.png"
+ps_l2 RCDATA "..\\assets\\button_glyphs\\ps_l2.png"
+ps_l3 RCDATA "..\\assets\\button_glyphs\\ps_l3.png"
+ps_options RCDATA "..\\assets\\button_glyphs\\ps_options.png"
+ps_r1 RCDATA "..\\assets\\button_glyphs\\ps_r1.png"
+ps_r2 RCDATA "..\\assets\\button_glyphs\\ps_r2.png"
+ps_r3 RCDATA "..\\assets\\button_glyphs\\ps_r3.png"
+ps_square RCDATA "..\\assets\\button_glyphs\\ps_square.png"
+ps_touchpad RCDATA "..\\assets\\button_glyphs\\ps_touchpad.png"
+ps_triangle RCDATA "..\\assets\\button_glyphs\\ps_triangle.png"
+stick_ls_down RCDATA "..\\assets\\button_glyphs\\stick_ls_down.png"
+stick_ls_left RCDATA "..\\assets\\button_glyphs\\stick_ls_left.png"
+stick_ls_right RCDATA "..\\assets\\button_glyphs\\stick_ls_right.png"
+stick_ls_up RCDATA "..\\assets\\button_glyphs\\stick_ls_up.png"
+stick_rs_down RCDATA "..\\assets\\button_glyphs\\stick_rs_down.png"
+stick_rs_left RCDATA "..\\assets\\button_glyphs\\stick_rs_left.png"
+stick_rs_right RCDATA "..\\assets\\button_glyphs\\stick_rs_right.png"
+stick_rs_up RCDATA "..\\assets\\button_glyphs\\stick_rs_up.png"
+xbox360_a RCDATA "..\\assets\\button_glyphs\\xbox360_a.png"
+xbox360_b RCDATA "..\\assets\\button_glyphs\\xbox360_b.png"
+xbox360_back RCDATA "..\\assets\\button_glyphs\\xbox360_back.png"
+xbox360_lb RCDATA "..\\assets\\button_glyphs\\xbox360_lb.png"
+xbox360_lt RCDATA "..\\assets\\button_glyphs\\xbox360_lt.png"
+xbox360_rb RCDATA "..\\assets\\button_glyphs\\xbox360_rb.png"
+xbox360_rt RCDATA "..\\assets\\button_glyphs\\xbox360_rt.png"
+xbox360_start RCDATA "..\\assets\\button_glyphs\\xbox360_start.png"
+xbox360_x RCDATA "..\\assets\\button_glyphs\\xbox360_x.png"
+xbox360_y RCDATA "..\\assets\\button_glyphs\\xbox360_y.png"
+xboxmodern_a RCDATA "..\\assets\\button_glyphs\\xboxmodern_a.png"
+xboxmodern_b RCDATA "..\\assets\\button_glyphs\\xboxmodern_b.png"
+xboxmodern_lb RCDATA "..\\assets\\button_glyphs\\xboxmodern_lb.png"
+xboxmodern_ls RCDATA "..\\assets\\button_glyphs\\xboxmodern_ls.png"
+xboxmodern_lt RCDATA "..\\assets\\button_glyphs\\xboxmodern_lt.png"
+xboxmodern_menu RCDATA "..\\assets\\button_glyphs\\xboxmodern_menu.png"
+xboxmodern_rb RCDATA "..\\assets\\button_glyphs\\xboxmodern_rb.png"
+xboxmodern_rs RCDATA "..\\assets\\button_glyphs\\xboxmodern_rs.png"
+xboxmodern_rt RCDATA "..\\assets\\button_glyphs\\xboxmodern_rt.png"
+xboxmodern_view RCDATA "..\\assets\\button_glyphs\\xboxmodern_view.png"
+xboxmodern_x RCDATA "..\\assets\\button_glyphs\\xboxmodern_x.png"
+xboxmodern_y RCDATA "..\\assets\\button_glyphs\\xboxmodern_y.png"
+
+// Real controller-body reference photos (issue #66 restyle, 2026-08-05) -- user-
+// supplied, background-removed/alpha-corrected product photos of each supported
+// GlyphStyle's real controller, used as the Stick/Button Layout drill-down screen's
+// diagram background instead of the earlier procedurally-drawn circle/rect schematic.
+// Same RCDATA/bareword-name embedding convention as the button glyphs above.
+controller_body_xbox360 RCDATA "..\\assets\\controller_diagrams\\xbox360_controller_base.png"
+controller_body_xboxmodern RCDATA "..\\assets\\controller_diagrams\\xboxmodern_controller_base.png"
+controller_body_ps4 RCDATA "..\\assets\\controller_diagrams\\ps4_controller_base.png"
+
+// Custom mouse cursor (2026-08-01) -- replaces the native software cursor so it
+// draws correctly on top of this project's own glyph overlays (this project's
+// redraw happens at end-of-frame, after the native cursor's own draw call, so the
+// native cursor would otherwise render UNDER our icons). User-supplied art,
+// background/glow-cropped and resized to 128x128, real alpha channel. See
+// overlay_hud.cpp's cursor-draw code and analog_input_hooks.cpp's
+// Hook_004d48f0 for the suppress-native/redraw-ours mechanism.
+cursor_arrow RCDATA "..\\assets\\cursor_arrow.png"

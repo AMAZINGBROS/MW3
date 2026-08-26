@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{6E1B1D1A-9C7B-4B7A-9E7B-7C1B1A2D3E4F}</ProjectGuid>
+    <RootNamespace>proxyd3d9</RootNamespace>
+    <!-- Game binaries (iw5sp.exe / iw5mp.exe) are confirmed x86 (32-bit) — see CLAUDE.md.
+         This project only ever targets Win32; there is no x64 configuration on purpose. -->
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries Condition="'$(Configuration)'=='Debug'">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="'$(Configuration)'=='Release'">false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+  <PropertyGroup>
+    <TargetName>d3d9</TargetName>
+    <!-- Deploy straight into the game install root, next to iw5sp.exe/iw5mp.exe.
+         Absolute path (2026-08-05): the project no longer lives inside the game
+         folder (moved out per re_notes/known_issues.md's "any file change in there
+         risks the whole project" concern), so there is no relative path between
+         this .vcxproj and the game install to rely on anymore. If the game is ever
+         reinstalled to a different drive/path, this needs updating too. -->
+    <OutDir>D:\SteamLibrary\steamapps\common\Call of Duty Modern Warfare 3\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;PROXYD3D9_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>third_party\minhook\include;third_party\minhook\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>def\proxy_d3d9.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <!-- hid.lib/setupapi.lib: 2026-08-11, issue #76. dualsense_input.cpp's raw-HID
+           DualSense backend needs SetupDiGetClassDevs/HidD_GetAttributes/
+           HidD_GetPreparsedData/HidP_GetCaps; nothing in this project needed these before. -->
+      <AdditionalDependencies>hid.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\analog_input_hooks.cpp" />
+    <ClCompile Include="src\controller_input.cpp" />
+    <ClCompile Include="src\dualsense_input.cpp" />
+    <ClCompile Include="src\d3d9_hook.cpp" />
+    <ClCompile Include="src\mod_config.cpp" />
+    <ClCompile Include="src\rumble.cpp" />
+    <ClCompile Include="src\overlay_hud.cpp" />
+    <ClCompile Include="src\real_settings.cpp" />
+    <ClCompile Include="src\vanilla_settings_sync.cpp" />
+    <ClCompile Include="src\staged_settings.cpp" />
+    <ClCompile Include="src\options_render_suppress.cpp" />
+    <ClCompile Include="src\asset_capture.cpp" />
+    <ClCompile Include="src\frame_benchmark.cpp" />
+    <!-- MinHook (BSD-style license, see third_party\minhook\LICENSE.txt;
+         attribution required if this mod is ever shipped, see CLAUDE.md paragraph 6). -->
+    <ClCompile Include="third_party\minhook\src\buffer.c" />
+    <ClCompile Include="third_party\minhook\src\hook.c" />
+    <ClCompile Include="third_party\minhook\src\trampoline.c" />
+    <ClCompile Include="third_party\minhook\src\hde\hde32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="def\proxy_d3d9.def" />
+    <None Include="third_party\minhook\LICENSE.txt" />
+    <!-- Barlow Condensed (SIL OFL 1.1), bundled font source, embedded via
+         proxy_d3d9.rc; see resource.h for the licensing note. -->
+    <None Include="..\assets\fonts\BarlowCondensed-OFL.txt" />
+    <None Include="..\assets\fonts\BarlowCondensed-SemiBold.ttf" />
+    <None Include="..\assets\fonts\BarlowCondensed-SemiBoldItalic.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="proxy_d3d9.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\controller_input.h" />
+    <ClInclude Include="src\dualsense_input.h" />
+    <ClInclude Include="src\mod_config.h" />
+    <ClInclude Include="src\rumble.h" />
+    <ClInclude Include="src\asset_capture.h" />
+    <ClInclude Include="src\frame_benchmark.h" />
+    <ClInclude Include="src\overlay_hud.h" />
+    <ClInclude Include="src\real_settings.h" />
+    <ClInclude Include="src\vanilla_settings_table.h" />
+    <ClInclude Include="src\vanilla_settings_sync.h" />
+    <ClInclude Include="src\staged_settings.h" />
+    <ClInclude Include="src\options_render_suppress.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
