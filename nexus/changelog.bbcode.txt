@@ -1,0 +1,89 @@
+[color=#E74C3C][b]⚠ 2026-08-18: only v0.2.2 and v0.3.2+ remain on this page[/b][/color] — versions before v0.2.2 were removed 2026-07-31 as a VAC-risk mitigation step (v0.2.2 permanently removed the aim-assist code those builds shipped with). As of v0.3.3, everything between v0.2.2 and the current release (v0.2.5 through v0.3.1.h1 — rapid, in-progress alpha churn, not a stable point worth keeping downloadable) has also been removed. Nothing was deleted — full source history for every version remains on GitHub — only the downloadable files are no longer offered here.
+
+[hr]
+
+[b][size=4]v0.3.3 — Alpha (2026-08-18) — Real, extended-session performance stuttering fixed[/size][/b]
+
+[color=#E74C3C][b]Headline fix:[/b][/color] real, extended-session performance stuttering — three separate, evidence-backed causes found and fixed. [font=Courier New]proxy_d3d9.log[/font] was opened in append mode and never trimmed between launches (grew past 2GB across every session since install). The background controller-poll thread never stopped rescanning every XInput slot plus DualSense on every ~4ms tick, even once the active device was known — now locks onto the active device once at boot. A diagnostic log's dedup logic didn't actually deduplicate, producing hundreds of thousands of lines in a single combat session. A/B tested directly against v0.2.2 to confirm the regression was real, not imagined — user-confirmed "much better" afterward. One residual dip (looking toward enemies) remains open, most likely genuine GPU-side rendering cost — see [font=Courier New]re_notes/known_issues.md[/font] issue #79.
+
+[b]Also fixed:[/b] vibration could get stuck on indefinitely across a pause or menu. A real co-op bug where damage-taken rumble could trigger off a teammate's hits instead of your own — mitigated (disables itself when a second real player is detected) pending further research into the real "which player is me" mechanism.
+
+[color=#E74C3C][b]Ships a first, PREVIEW/WIP pass at DualSense Bluetooth support — stick input does not work correctly over Bluetooth, confirmed live against real hardware; do not rely on it for gameplay.[/b][/color] USB DualSense support (added v0.3.2) still hasn't been independently confirmed working either — see issue #76.
+
+Full detail on GitHub: see this mod's Source page and [font=Courier New]PATCHNOTES.md[/font].
+
+[hr]
+
+[b][size=4]v0.3.2 — Alpha (2026-08-16) — Controller-glyph icons actually work now; native DualSense/gyro preview[/size][/b]
+
+[color=#E74C3C][b]Headline fix, and worth being blunt about:[/b][/color] every "no controller glyphs" report this mod has ever received, going all the way back to v0.3.0, traced to one cause — this project's own master on/off switch for the whole glyph overlay was hardcoded off and never flipped on for release. Not a hardware quirk, not Steam Overlay, not a memory-address theory — this mod shipped its own headline feature permanently disabled by mistake, three releases in a row. Finding that took 16 days and two full investigation rounds, including two real-but-partial fixes along the way and two externally-sourced theories that both turned out to be unnecessary, because nobody re-checked this project's own simplest config flag against a log line that had been printing the answer the entire time. If controller glyphs never worked for you on ANY prior release, this is why — fixed and confirmed live via direct reproduction, not assumed. The flag itself was removed entirely (not just re-defaulted) so upgrading from an older install can't get silently stuck on the old broken value. [b]Also new, PREVIEW/WIP, off by default:[/b] a first pass at native DualSense (PS5 controller) support via raw HID, bypassing Steam Input entirely, plus native gyro-aim riding the same connection — not yet live-tested against real hardware. Full detail on GitHub: see this mod's Source page, [font=Courier New]PATCHNOTES.md[/font] and [font=Courier New]re_notes/known_issues.md[/font] issues #74 (full incident postmortem) and #76.
+
+[hr]
+
+[b][size=4]v0.3.1.h1 — Hotfix (2026-08-09) — Mouse-lag regression, non-16:9 scaling/glyph visibility, Options-screen crash[/size][/b]
+
+[color=#F39C12]Feature-free hotfix — no new scope, only fixes.[/color] [b]Critical fix:[/b] a mouse-movement-correlated FPS drop to as low as ~4fps, confirmed live and fully fixed by moving all controller-polling calls onto a dedicated background thread. [b]Also fixed:[/b] controller-glyph icons never appearing at all on non-16:9 resolutions — root-caused to two separate, confirmed bug classes (a font-detection allowlist gap, since the real engine draws the same HUD text with a different font at non-16:9 aspect ratios; and a position formula that multiplied by a value that varies by font tier instead of screen proportion), found via direct log evidence rather than guesswork, after two earlier fix attempts were live-tested and found wrong. A real crash-risk fix in the still-preview/WIP Options screen (a texture cache never released across a device reset) and a log-volume fix for long sessions (one real session hit ~22GB) are also included. [b]Honesty note:[/b] the mouse-lag fix is confirmed live; the non-16:9 fixes have not yet had an explicit "fully correct everywhere" confirmation across every resolution and hint type. Full detail on GitHub: see this mod's Source page, [font=Courier New]PATCHNOTES.md[/font] and [font=Courier New]re_notes/known_issues.md[/font] issues #67/#70/#71/#72/#73.
+
+[hr]
+
+[b][size=4]v0.3.1 — Alpha (2026-08-06) — Non-English glyph fix + Options screen preview[/size][/b]
+
+[color=#F39C12]⚠ Stabilization release — same treatment as v0.2.2: no further release planned for up to ~2 weeks after this one unless a critical issue turns up.[/color] [b]Headline fix:[/b] controller-glyph icons were silently broken for every non-English game language (community-reported) — several detection sites matched the game's own on-screen LOCALIZED text against a hardcoded English word instead of a language-independent signal. Properly fixed by finding and wiring in the game's own real localized-string resolver, confirmed live by switching languages and retesting, not worked around. Known remaining gap: a few menu glyph icons can land in a slightly wrong POSITION under other languages (selection is correct everywhere now, only fine positioning on a handful of screens isn't yet). [b]Also new, shipped as an explicitly labeled preview/WIP feature — off by default, [font=Courier New]mw3ncp_config.ini[/font]-only, no in-game toggle:[/b] a from-scratch replacement Options screen covering every real vanilla setting (Look/Video/Audio/Voice/Advanced Video/Movement/Actions), real keybind rebind capture, and a custom controller-bindings drill-down. It's real, working code that compiles clean and follows every rendering/input pattern already live-confirmed elsewhere in this project — but genuinely has not been played yet. Enable at your own risk via [font=Courier New][Options] UseCustomOptionsScreen=1[/font]. Full detail on GitHub: see this mod's Source page, [font=Courier New]PATCHNOTES.md[/font] and [font=Courier New]re_notes/known_issues.md[/font] issue #66.
+
+[hr]
+
+[b][size=4]v0.3.0 — Alpha (2026-08-03) — the most significant release to date[/size][/b]
+
+By code volume the biggest release yet: 8,057 lines changed overall, 5,725 of them source code — more than double the prior record. [b]Real controller-glyph icons[/b] shipped and confirmed live: in-game interact hints (pickup/swap, buy-station, mantle, Reload, grenade throwback, Survival ready-up), menu corner hints (Back/Friends), and a custom mouse cursor overlay drawn correctly on top of them. [b]Real controller vibration[/b] on weapon fire and taking damage — went through four tuning rounds and is now maxed out in software, physically confirmed working. A full bug batch from the project's first public Survival co-op stream is fixed and confirmed live: crouch input occasionally not responding, Survival ready-up UI conflicts, mistargeted menu text, Jump not standing you up first, and cursor visibility. The highlighted-item menu glyph is now shown only on an explicit, individually-verified allowlist (main menu, Campaign hub, two popups) after an audit found several "done" screens were never actually re-confirmed — a deliberate release-safety narrowing, not a regression. [color=#F39C12][b]Two things honestly flagged as NOT working, not just unpolished:[/b][/color] auto-mantle while sprinting (implemented, live-tested twice, still doesn't reliably fire — shipped disabled by default) and vibration for damage absorbed by Survival's purchasable Body Armor (a separate value from real health not yet located in memory). Full detail on GitHub: see this mod's Source page, [font=Courier New]PATCHNOTES.md[/font].
+
+[hr]
+
+[b][size=4]v0.2.5 — Alpha (2026-07-31) — Hotfix: crouch/stance reliability + on-screen notifications[/size][/b]
+
+A reliability-focused hotfix, plus this project's first on-screen UI feature. [b]Crouch/Prone intermittently failing to register is fully fixed[/b] (two rounds, both user-confirmed live) — a real verify-and-retry against the engine's own stance field, including a root-caused fix for a "needs an initial click at launch" gap. [b]Critical fix: firing while Hold Breath was held on a sniper could silently fail[/b] — a bind-index collision, now resolved and confirmed live. Look sensitivity is now independently configurable for horizontal/vertical axes, and the ADS close-range slowdown (pistols/iron sights) got its own separate tuning knob instead of skewing high-zoom scopes too. [font=Courier New]mw3ncp_config.ini[/font] now auto-migrates existing settings across updates and [b]hot-reloads live[/b] while the game is running. New: a small on-screen top-right notification (startup message + config-reload confirmation), with a rare stylized variant, rendered in a font now fully embedded in the DLL itself — no separate font install required. Full detail on GitHub: see this mod's Source page, [font=Courier New]PATCHNOTES.md[/font].
+
+[hr]
+
+[b][size=4]v0.2.2 — Alpha (2026-07-20) — Risk-mitigation release[/size][/b]
+
+[color=#F39C12]⚠ Recommended update for anyone on v0.2.1 or earlier.[/color] [b]Aim assist has been permanently removed[/b] — not just disabled, the code is deleted entirely. Deep anti-cheat research found the closest real precedent for a proxy-DLL project that reads/manipulates gameplay memory beyond pure input remapping (ENB) has actual documented ban history, unlike this project's core input-remapping work, which is architecturally closer to ReShade's clean track record (never reads gameplay memory, only writes real values into real input structures). Whether earlier builds' mere presence of aim-assist code raised VAC exposure is not confirmed — no ban has been reported — but is genuinely suspected enough to warrant this release. No other player-facing changes.
+
+[hr]
+
+[b][size=4]v0.2.1 — Alpha (2026-07-20)[/size][/b]
+
+Two headline items, both confirmed live. [b]Look acceleration ramp[/b]: added a console-accurate turn-rate ramp (33ms, tied to this old engine's own locked 30fps tick — live-tested against many values before landing on the right one, not a guess). [b]Hold Breath[/b] (L3 while ADS'd on a sniper) is now [b]fully working[/b] — fixed after an extensive live-debugging pass that ended by isolating a single stuck engine-struct byte; now genuinely native input, no key-synthesis needed.
+
+[hr]
+
+[b][size=4]v0.2.0 — Alpha (2026-07-19)[/size][/b]
+
+First release tagged as a real milestone rather than incremental groundwork. [b]Sprint migrated onto its real native kbutton[/b] — this made its entire custom stamina/cooldown timer layer redundant (removed) and resolved the Extreme Conditioning perk override for free. [b]3 of Survival's 4 real killstreaks confirmed working[/b] (Predator Missile launch, Precision Airstrike, AI squadmate call-in). Real D-pad/A menu navigation extended to the main menu and title screen. A first vibration/rumble attempt crashed the game at startup — root-caused and disabled, not shipped broken.
+
+[hr]
+
+[b][size=4]v0.1.3 (2026-07-17)[/size][/b]
+
+Real, native D-pad/A menu navigation confirmed working live across the main menu, pause menu, and options screens. Deep groundwork this release: a controller-options-menu injection mechanism (blocked on a real engine limit, fix direction found), a likely fix for aim assist's broken target classification (not yet live-verified, still disabled), real vibration trigger points identified, and an MW3-client-compatibility survey that surfaced a real anti-cheat risk — see the Plutonium warning on this page.
+
+[hr]
+
+[b][size=4]v0.1.2 (2026-07-16)[/size][/b]
+
+Mostly a documentation-accuracy pass — several already-shipped features had never been written up anywhere. One small functional fix (comment text only, no behavior change).
+
+[hr]
+
+[b][size=4]v0.1.1 (2026-07-16)[/size][/b]
+
+Fixed a real regression where the controller Sprint hooks silently broke vanilla keyboard Shift-to-sprint regardless of whether a controller was even connected. Fixed a bug where the ADS look-slowdown formula could invert look direction entirely on deep-zoom optics.
+
+[hr]
+
+[b][size=4]v0.1.0-prealpha (2026-07-15)[/size][/b]
+
+Initial pre-alpha release. Analog movement/look, Fire/ADS/Melee/Tactical/Lethal/Jump, Crouch/Prone stance ladder, Interact+Reload, Sprint (an early raw-bit implementation, later replaced), weapon switch, pause menu open/close, D-pad actionslots, and Survival's ready-up prompt all confirmed working live for the first time.
+
+[hr]
+
+[i]Full, unabridged patch notes — including every fix, every reverted attempt, and the reverse-engineering trail behind each change — are maintained in [font=Courier New]PATCHNOTES.md[/font] in the GitHub source repo.[/i]
