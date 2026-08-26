@@ -16,8 +16,8 @@ jobs:
     - name: Build Project
       run: msbuild proxy_d3d9/proxy_d3d9.vcxproj /p:Configuration=Release /p:Platform=Win32
       
-    - name: Upload DLL Artifact
+    - name: Find and Upload DLL
       uses: actions/upload-artifact@v4
       with:
         name: d3d9-dll
-        path: proxy_d3d9/obj/Release/d3d9.dll
+        path: releases/d3d9.dll
