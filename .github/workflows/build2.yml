@@ -1,0 +1,27 @@
+name: Build DLL
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build Project
+      run: msbuild proxy_d3d9/proxy_d3d9.vcxproj /p:Configuration=Release /p:Platform=Win32
+      
+    - name: Commit and Push DLL to Releases
+      shell: pwsh
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git status
+        git add releases/d3d9.dll
+        git commit -m "Auto-update built d3d9.dll in releases folder"
+        git push
